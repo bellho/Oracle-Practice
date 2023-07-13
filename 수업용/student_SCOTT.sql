@@ -304,7 +304,7 @@ SELECT * FROM USER_tables;
 SELECT * FROM USER_views;
 
 -- 2023/07/13
--- DDL 수업 CREATE
+-- CREATE
 
 CREATE TABLE emp_copy1 AS SELECT * FROM emp; -- 첫 번째 복사 TABLE - 물리적 공간
 SELECT * FROM emp_copy1;
@@ -336,9 +336,46 @@ SELECT * FROM emp_copy20; -- 테이블 확인
 
 SELECT * FROM USER_CONSTRAINTS;
 
--- DDL 수업 ALTER : 정의된 내용을 수정할 때 , DROP : 
 
 
+-- ALTER : 테이블에 정의된 내용을 수정(컬럼명, 자료형, CONSTRAINTS, 컬럼 추가도 가능)할 때 사용 -> TABLE 구조 변경 , DROP : 객체(USER, TABLE	)를 삭제할 때 사용
+
+--insert into emp (컬럼명1, 컬럼명2, ...) value (값1, 값2, ...);
+INSERT INTO emp (ENAME, EMPNO, JOB, MGR, HIREDATE, DEPTNO)
+	values('EJK', 8003, 'T', 7788, SYSDATE, 40);
+SELECT * FROM EMP;
+INSERT INTO emp (ENAME, EMPNO, JOB, MGR, HIREDATE, DEPTNO)
+	values('EJK2', 8004, 'F', 7789, SYSDATE, 40);
+
+UPDATE EMP
+	SET MGR = 7788
+	WHERE ENAME = 'EJK2'
+	--UPDATE 명령문의 WHERE절에는 컬럼명PK=값
+	--WHERE 절에는 컬럼명PK=값 ==> RESULTSET 은 단일행
+	
+-- 20번 부서의 MGR가 SMITH 7908로 조직개편
+UPDATE EMP
+	SET MGR = 7908
+	WHERE DEPTNO = 20
+; -- 결과 5
+UPDATE EMP
+	SET MGR = 7908
+	WHERE DEPTNO = 70
+; -- 결과 0
+	-- DQL - SELECT 명령어의 결과는 RESULT SET 모양으로 출력되고, 
+	-- DML - INSERT/UPDATE/DELETE 결과는 정수 모양으로 출력된다.
+
+ROLLBACK -- 최근 CUMMIT으로 테이블 상태를 되돌린다
+
+SELECT * FROM EMP;
+
+UPDATE EMP
+	SET MGR = 7902
+	WHERE ENAME = 'EJK2'
+;
+
+
+-- VIEW
 
 
 
