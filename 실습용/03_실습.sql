@@ -79,14 +79,57 @@ WHERE SAL > (SELECT E2.SAL FROM EMP e2 WHERE ENAME = 'MARTIN') AND (E.deptno = 2
 --Q. 8
 --‘RESEARCH’부서의 사원 이름과 매니저 이름을 나타내시오.
 SELECT 
-	e.ENAME,
-	e2.ENAME AS "MANAGER" ,
-FROM EMP e 
-JOIN EMP e2 , DEPT d 
-	ON e.MGR = e2.EMPNO , e.deptno=d.deptno AND d.dname IN 'RESEARCH';
+	ENAME,
+	(
+	SELECT
+		ENAME
+	FROM
+		EMP M
+	WHERE
+		M.EMPNO = E.MGR) AS MANAGER
+FROM
+	EMP E ,
+	DEPT D
+WHERE
+	E.DEPTNO = D.DEPTNO AND D.DNAME IN 'RESEARCH';
 
-
-
+--Q. 9
+--GRADE별로 급여을 가장 작은 사원명을 조회
+SELECT
+	S.GRADE ,
+	ENAME AS "등급별가장작은급여"
+FROM
+	EMP e ,
+	SALGRADE s
+WHERE
+	(GRADE,
+	SAL) IN (
+	SELECT
+		GRADE,
+		MIN(SAL)
+	FROM
+		EMP,
+		SALGRADE
+	WHERE
+		SAL >= LOSAL
+		AND SAL <= HISAL
+	GROUP BY
+		GRADE);
+;
+--Q. 10.
+--GRADE별로 가장 많은 급여, 가장 작은 급여, 평균 급여를 조회
+SELECT S.GRADE , MIN(SAL) , MAX(SAL), TRUNC(AVG(SAL) , 2)
+FROM EMP e , SALGRADE s 
+WHERE  SAL > S.LOSAL AND SAL < S.HISAL
+GROUP BY GRADE
+;
+SELECT GRADE,  ENAME , SAL
+FROM EMP e , SALGRADE s 
+WHERE  SAL > S.LOSAL AND SAL < S.HISAL
+;
+SELECT *
+FROM SALGRADE s 
+;
 
 
 
