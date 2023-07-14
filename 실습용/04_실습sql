@@ -1,0 +1,93 @@
+select * from department;
+select * from employee;
+select * from job;
+select * from location;
+select * from national;
+select * from sal_grade;
+
+-- 4. 부서코드가 D5이거나 D6인 사원의 사원 명, 직급 명, 부서 코드, 부서 명 조회
+SELECT emp_name as "사원명", 
+    (select job_name
+    from job j
+    where e.job_code = j.job_code) as "직급",
+    e.dept_code as "부서코드",
+    (SELECT
+        d.dept_title
+    FROM department d
+    where d.dept_id = e.dept_code) as "부서명"
+FROM employee e 
+where e.dept_code in ('D6' , 'D5')
+;
+
+--5. 보너스를 받는 사원의 사원 명, 부서 명, 지역 명 조회
+SELECT
+    e.emp_name as "사원명",
+    e.bonus as "보너스 비율",
+    d.dept_title as "부서명",
+    (SELECT
+        l.local_name
+    FROM location l
+    where d.location_id = l.local_code
+    ) as "지역명"
+FROM employee e
+    join department d
+    on e.dept_code = d.dept_id
+where not e.bonus is null
+;
+
+--6. 사원 명, 직급 명, 부서 명, 지역 명 조회
+SELECT
+    e.emp_name as "사원명",
+    (SELECT
+        j.job_name
+    FROM job j
+    where j.job_code = e.job_code) as "직급",
+    d.dept_title as "부서명",
+    (SELECT
+        l.local_name
+    FROM location l
+    where l.local_code = d.location_id) as "근무 지역"
+FROM employee e
+    join department d
+    on e.dept_code = d.dept_id
+;
+
+--7. 한국이나 일본에서 근무 중인 사원의 사원 명, 부서 명, 지역 명, 국가 명 조회
+select 
+    emp_name as "사원 명",
+    d.dept_title as "부서 명",
+    l.local_name as "지역 명",
+    n.national_name as "국가 명"
+from
+    employee e
+        join department d
+        on e.dept_code = d.dept_id
+            join location l 
+            on d.location_id = l.local_code
+                join national n
+                on l.national_code = n.national_code
+where
+    l.national_code = 'KO' OR l.national_code = 'JP'
+;
+
+--8. 한 사원과 같은 부서에서 일하는 사원의 이름 조회
+select e.emp_name, e.dept_code, m.emp_name
+    from employee e, employee m
+        where e.dept_code = m.dept_code
+        order by e.emp_name
+;
+
+--9. 보너스가 없고 직급 코드가 J4이거나 J7인 사원의 이름, 직급 명, 급여 조회(NVL 이용)
+select 
+    e.emp_name,
+    j.job_name,
+    e.salary
+from 
+    employee e
+        join department d
+        on e.dept_code = d.dept_id
+            join job j
+            on e.job_code = j.job_code
+where
+    e.bonus is null and e.job_code in ('J4','J7')
+;
