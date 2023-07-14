@@ -443,9 +443,9 @@ UPDATE VIEW_EMP_CHECKOPTION SET COMM = 350 WHERE EMPNO = 7499
 UPDATE EMP SET DEPTNO = 20 WHERE EMPNO = 7499
 ;
 
--- SEQUENCE ********************
+-- SEQUENCE 면접 ********************
 
--- 표현식은 PPT 자료 확인 10장 p.2
+-- 표현식은 PPT 자료 확인 10장 p.2 외우기, ALTER 부분도 외우기
 
 -- SEQUENCE 순자척으로 정수 값을 자동으로 생성하는 객체롤 자동 번호 발생기 역할을 함
 -- SEQUENCE 생성
@@ -473,10 +473,45 @@ SELECT * FROM USER_SEQUENCES;
 -- 오라클 객체로 내부 구조는 B*트리 형식으로 구성
 -- 장점 : 검색 속도가 빨라지고 부하 감소, 시스템 전체 성승 향상
 -- 단점 : INDEX를 위한 저장공간이 필요. 변경 작업이 일어날 경우 부하가 걸려 오히려 성능저하
+-- 사용용도
+-- 1.1 인덱스가 필요한 경우
+-- 테이블의 행의 수가 많을 경우
+-- WHERE문에 특정 컬럼이 많이 사용될 때
+-- 검색 결과가 전체 데이터의 2~4% 정도일 때
+-- JOIN에 자주 사용되는 컬럼
+-- NULL을 포함하는 행이 많은 컬럼일 경우
+
+
+-- 1.2 인덱스가 불필요한 경우
+-- 데이터가 적은(수천 건 미만) 경우
+-- 조회 보다 삽입, 수정, 삭제 처리가 많은 테이블일 경우
+-- 조회 결과가 정테 행의 15% 이상 조회할 것으로 예상되는 경우
 
 -- INDEX 정보 확인
 SELECT * FROM USER_INDEXES;
+SELECT * FROM USER_IND_COLUMNS;
+SELECT * FROM USER_CONSTRAINTS;
+SELECT * FROM USER_CONS_COLUMNS;
 
+-- 첫 번째 방법. 함수 기반 INDEX
+CREATE INDEX IDX_EMP_SAL ON EMP(SAL);
+-- WHERE 절에 SAL*12 > 5000 처럼 조건문에 사용이 빈번할 때 INDEX를 걸어줌
+CREATE INDEX IDX_EMP_SAL ON EMP(SAL * 12);
+
+-- WHERE 절에 SAL > 5000 AND COMM > 200 처럼 조건문에 사용이 빈번할 때 INDEX를 걸어줌
+CREATE INDEX IDX_EMP_SAL_COMM ON EMP(SAL,COMM);
+SELECT * FROM EMP WHERE SAL > 3000 AND COMM IS NOT NULL;
+
+-- 두 번째 방법. BITMAB 기반 INDEX - 도메인의 종류가 적을 때 동일한 데이터가 많은 경우 - GENDER 남여
+CREATE BITMAP INDEX IDX_EMP_SAL ON EMP(SAL);
+CREATE BITMAP INDEX IDX_EMP_SAL_COMM ON EMP(SAL,COMM);
+
+-- I. UNIQUE
+-- 	INSERT 오류체크빠름.
+-- II. NON-UNIQUE
+
+-- INDEX 재생성  외우기
+ALTER INDEX PK_EMP REBUILD;
 
 
 
