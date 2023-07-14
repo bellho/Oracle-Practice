@@ -513,6 +513,9 @@ CREATE BITMAP INDEX IDX_EMP_SAL_COMM ON EMP(SAL,COMM);
 -- INDEX 재생성  외우기
 ALTER INDEX PK_EMP REBUILD;
 
+-- SYNONYM ****************************
+-- SYNONYM 사용자가 다른 사용자의 객체를 참조할 때 사용
+CREATE SYNONYM EMP FOR EMPLOYEE;
 
 
 
