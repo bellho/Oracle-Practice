@@ -303,6 +303,7 @@ SELECT * FROM USER_constraints;
 SELECT * FROM USER_tables;
 SELECT * FROM USER_views;
 
+-- ****************************************************************************************************
 -- 2023/07/13
 -- CREATE
 
@@ -397,20 +398,84 @@ INSERT ALL
 SELECT MAX(deptno) + 10 newdeptno FROM DEPT
 ;
 
+-- ****************************************************************************************************
+-- 23/07/14
+-- VIEW ****************************
+-- VIEW테이블 생성
+CREATE OR REPLACE VIEW VIEW_T1
+	AS SELECT * FROM EMP
+;
 
--- VIEW
+-- T2테이블이 없으에도 VIEW 생성
+CREATE OR REPLACE FORCE VIEW VIEW_T2
+	AS SELECT * FROM T2
+;
 
+-- VIEW_EMP_READONLY 읽기 전용 VIEW 테이블
+CREATE OR REPLACE VIEW VIEW_EMP_READONLY
+	AS 
+	SELECT * FROM EMP
+	WITH READ ONLY	
+;
 
+-- SQL Error [42399] [99999]: ORA-42399: 읽기 전용 뷰에서는 DML 작업을 수행할 수 없습니다. - 오류
+INSERT INTO VIEW_EMP_READONLY (EMPNO, ENAME, DEPTNO) VALUES(8100, 'EJEJ', 30)
+;
 
+--
+CREATE OR REPLACE VIEW VIEW_EMP_CHECKOPTION
+	AS
+	SELECT * FROM EMP
+	WHERE DEPTNO = 30
+	WITH CHECK OPTION -- CHECK를 하여 DEPTNO를 VIEW에서 UPDATE가 되지 않게 설정
+;
 
+SELECT * FROM VIEW_EMP_CHECKOPTION
+;
 
+--UPDATE 시도 => SQL Error [1402] [44000]: ORA-01402: 뷰의 WITH CHECK OPTION의 조건에 위배 됩니다 - 오류
+UPDATE VIEW_EMP_CHECKOPTION SET DEPTNO = 20 WHERE EMPNO = 7499
+;
+--WITH CHECK 되지 않은 부분은 변경이 가능
+UPDATE VIEW_EMP_CHECKOPTION SET COMM = 350 WHERE EMPNO = 7499
+;
+--TABLE을 이용한 UPDATE는 가능
+UPDATE EMP SET DEPTNO = 20 WHERE EMPNO = 7499
+;
 
+-- SEQUENCE ********************
 
+-- 표현식은 PPT 자료 확인 10장 p.2
 
+-- SEQUENCE 순자척으로 정수 값을 자동으로 생성하는 객체롤 자동 번호 발생기 역할을 함
+-- SEQUENCE 생성
+CREATE SEQUENCE SEQ_T1;
 
+-- CURRVA을 +1 해준다 - UNIQUE 값으로 넣기 편함 ex.게시판, 상품번호
+-- INSERT 과 함께 사용함
+-- SEQUENCE 이름을 지을 때 SEQ_테이블명_컬럼명
+-- 예를 들어 EMP테이블에 EMPNO에 적용 - SEQ_EMP_EMPNO
+-- INSERT INTO EMP VALUES ( SEQ_EMP_EMPNO.nextval , "홍길동", ...); 커맨트에 ..._SEQ 삽입
+SELECT SEQ_T1.NEXTVAL FROM DUAL
+;
 
+SELECT SEQ_T1.CURRVAL FROM DUAL
+;
 
+-- SQUENCE 정보 확인
+SELECT * FROM USER_SEQUENCES;
 
+-- 수정 표현식은 PPT 자료 확인 10장 p.6
+
+-- INDEX 면접에 많이 물어봄 ********************
+-- INDEX 객체는 TABLE 객체에서 정보를 가져옴. 테이블 객체가 사라져도 무관. SEQUENCE도 마찬가지. CONSTRAINT는 예외
+-- PK로 제야조건을 걸면 PK로 인해 INDEX 자동 생성
+-- 오라클 객체로 내부 구조는 B*트리 형식으로 구성
+-- 장점 : 검색 속도가 빨라지고 부하 감소, 시스템 전체 성승 향상
+-- 단점 : INDEX를 위한 저장공간이 필요. 변경 작업이 일어날 경우 부하가 걸려 오히려 성능저하
+
+-- INDEX 정보 확인
+SELECT * FROM USER_INDEXES;
 
 
 
