@@ -517,6 +517,72 @@ ALTER INDEX PK_EMP REBUILD;
 -- SYNONYM 사용자가 다른 사용자의 객체를 참조할 때 사용
 CREATE SYNONYM EMP FOR EMPLOYEE;
 
+-- ****************************************************************************************************
+-- 23/07/17
+
+
+create sequence seq_tb1_c1 start with 10 increment by 10 maxvalue 90 minvalue 10 nocycle cache 20; -- 예를 들어 작성
+select seq_tb1_c1.currval from dual;
+--ORA-02289: 시퀀스가 존재하지 않습니다.
+--02289. 00000 -  "sequence does not exist"
+--*Cause:    The specified sequence does not exist, or the user does
+--           not have the required privilege to perform this operation.
+--*Action:   Make sure the sequence name is correct, and that you have
+--           the right to perform the desired operation on this sequence.
+--551행, 8열에서 오류 발생
+--nextval을 정의 해야함
+select seq_tb1_c1.nextval from dual;
+
+-- role객체
+alter session set "_ORACLE_SCRIPT"=true; -- 세션 세팅 권한 부여
+create role role_scott_manager; -- role 구조식
+create user kh2 identified kh2;
+
+grant connect, resource to kh2;
+--connect -- 롤이름
+--권한들의 묶음 -- 롤
+--create session -- 접속권한
+--공간 space 를 사용하는 권한들 묶어서 resource 롤에 지정함
+
+--grant 권한1, 권한2, ..., 롤명1, 롤명2, ... to role_scott_manager; 만들어진 role에 권한을 부여
+--grant role_scott_manager to kh2; 만들어진 user에 권한을 부여
+
+-- revoke create view from role_scott_manager; grant role_scott_manager 문에 정의된 권한을 삭제
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
