@@ -508,6 +508,104 @@ CREATE USER kh identified BY KH;
 
 GRANT CONNECT, RESOURCE, DBA TO kh;
 
+-- ****************************************************************************************************
+-- 23/07/17
+-- 5교시 ppt 실습
+-- 3_group by _having4
+
+-- group by - 꼭 지켜져야하는 룰 : group by 컬럼명은 select 에서 정의된 컬럼명만 올 수 있다.(함수 제외)
+-- rollup과 cube
+-- rollup은 컬럼명 전체를 또 sum시킨다.(집계)
+-- rollup에서 처음 나온 컬럼명 기준되어, null값은 들어가지 않는다
+-- 컬럼명이 한 개인 경우
+select job_code, sum(salary)
+from employee
+group by rollup(job_code)
+order by 1
+;
+select job_code, sum(salary)
+from employee
+group by cube(job_code)
+order by 1
+;
+
+-- 컬럼명이 두 개 이상인 경우
+-- 컬럼명이 두 새 이상인 rollup은 컬럼명 마다 sum해주고 마지막엔 그 sum값들으 다시 sum해준다
+select dept_code, job_code, sum(salary)
+from employee
+group by rollup(dept_code,job_code)
+;
+-- cube 같은 경우는
+select dept_code, job_code, sum(salary)
+from employee
+group by cube(dept_code, job_code)
+order by 1
+;
+
+
+select dept_code, job_code, sum(salary)
+from employee
+group by rollup(dept_code, job_code)
+union
+select '', job_code, sum(salary)
+from employee
+group by rollup(job_code)
+;
+
+select dept_code, job_code, sum(salary)
+from employee
+group by cube(dept_code, job_code)
+order by 1
+;
+
+SELECT DEPT_CODE, JOB_CODE, SUM(SALARY),
+        CASE 
+--      grouping(c1) : c1의 집계부분인지 0,1로 확인됨.
+--      0 : 산출물이 있으면
+--      1 : 산출물이 없으면
+        WHEN GROUPING(DEPT_CODE) = 0 AND GROUPING(JOB_CODE) = 1  THEN '부서별 합계'
+        WHEN GROUPING(DEPT_CODE) = 1 AND GROUPING(JOB_CODE) = 0  THEN '직급별 합계'
+        WHEN GROUPING(DEPT_CODE) = 1 AND GROUPING(JOB_CODE) = 1  THEN '총 합계'
+        ELSE '그룹별 합계'
+    END AS 구분
+FROM EMPLOYEE
+GROUP BY CUBE(DEPT_CODE, JOB_CODE)
+ORDER BY 1
+;
+
+-- 6교시 over
+
+-- ****************************************************************************************************
+-- 23/07/18
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

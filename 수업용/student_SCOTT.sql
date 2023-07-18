@@ -549,12 +549,48 @@ grant connect, resource to kh2;
 
 -- revoke create view from role_scott_manager; grant role_scott_manager 문에 정의된 권한을 삭제
 
+-- 6교시 over
+select deptno, empno, sal, sum(sal)
+from emp
+; -- 그냥 사용하면
+--ORA-00937: 단일 그룹의 그룹 함수가 아닙니다
+--00937. 00000 -  "not a single-group group function"
+--*Cause:    
+--*Action:
+--553행, 8열에서 오류 발생
 
 
+-- window = over(partition by 컬럼명) : 기존 group by 단점 개선
+select deptno, empno, ename, sal, sum(sal) over(partition by deptno) sumsal
+from emp
+; -- over(partition by 컬럼명) 컬럼명 영역 별로 result set 영역을 새로 만듬
+  -- deptno가 기준이므로 3개의 영역을 새로 만듬 
 
+-- window - over(order by 컬럼명) : 기존 rownum 대비 간결, - 동일값에 같은 rank
+select deptno, empno, ename, sal, rank() over(order by sal asc) ranksal
+from emp
+;
 
+-- rownum
+select deptno, empno, ename, sal, rank() over(order by sal asc) ranksal
+from (
+    select rownum rn, t1.* 
+    from(
+        select deptno, empno, ename, sal 
+        from emp order by sal asc) t1)
+;
 
+-- 부서코드가 '30'인 직원의 이름, 급여, 급여에 대한 누적분산을 조회
+select ename, deptno, sal,
+    trunc(cume_dist() over(partition by deptno order by sal), 2) sal_cume_dist,
+    trunc(ratio_to_report(sal) over(partition by deptno), 2) sal_ratio
+from emp
+;
 
+-- ****************************************************************************************************
+-- 23/07/18
+
+select * from user_source; -- 프로시져 불러옴
 
 
 
