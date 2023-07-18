@@ -227,5 +227,29 @@ BEGIN
     commit;
 END;
 /
+BEGIN
+    FOR i IN 1 ..9 LOOP
+        FOR j IN 1 ..9 LOOP
+            DBMS_OUTPUT.PUT_LINE(i || ' × ' || j || ' = ' || i * j );
+        END LOOP;
+    END LOOP;
+END;
+/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
